@@ -1,0 +1,81 @@
+import React, { useState } from 'react';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+
+function CheckboxFilter() {
+    const [group1, setGroup1] = useState({ orange: false, apple: false, banana: false });
+    const [group2, setGroup2] = useState({ sunday: false, monday: false, wednesday: false });
+    const [searchResults, setSearchResults] = useState([
+        { id: 1, group1: 'orange', group2: 'sunday' },
+        { id: 2, group1: 'apple', group2: 'monday' },
+        { id: 3, group1: 'banana', group2: 'wednesday' },
+        { id: 4, group1: 'orange', group2: 'wednesday' },
+        { id: 5, group1: 'banana', group2: 'sunday' },
+    ]);
+
+    const handleCheckboxChange = (event, group) => {
+        const { name, checked } = event.target;
+        if (group === 'group1') {
+            setGroup1({ ...group1, [name]: checked });
+        } else if (group === 'group2') {
+            setGroup2({ ...group2, [name]: checked });
+        }
+        filterRecords();
+    };
+
+    const filterRecords = () => {
+        const filteredResults = searchResults.filter(result => {
+            const group1Match = Object.keys(group1).every(key => !group1[key] || result.group1 === key);
+            const group2Match = Object.keys(group2).every(key => !group2[key] || result.group2 === key);
+            return group1Match && group2Match;
+        });
+        setSearchResults(filteredResults);
+    };
+
+    return (
+        <div>
+            <FormControlLabel
+                control={<Checkbox checked={group1.orange} onChange={(e) => handleCheckboxChange(e, 'group1')} name="orange" />}
+                label="Orange"
+            />
+            <FormControlLabel
+                control={<Checkbox checked={group1.apple} onChange={(e) => handleCheckboxChange(e, 'group1')} name="apple" />}
+                label="Apple"
+            />
+            <FormControlLabel
+                control={<Checkbox checked={group1.banana} onChange={(e) => handleCheckboxChange(e, 'group1')} name="banana" />}
+                label="Banana"
+            />
+
+            <br />
+
+            <FormControlLabel
+                control={<Checkbox checked={group2.sunday} onChange={(e) => handleCheckboxChange(e, 'group2')} name="sunday" />}
+                label="Sunday"
+            />
+            <FormControlLabel
+                control={<Checkbox checked={group2.monday} onChange={(e) => handleCheckboxChange(e, 'group2')} name="monday" />}
+                label="Monday"
+            />
+            <FormControlLabel
+                control={<Checkbox checked={group2.wednesday} onChange={(e) => handleCheckboxChange(e, 'group2')} name="wednesday" />}
+                label="Wednesday"
+            />
+
+            <div>
+                {/* Display search results */}
+                {searchResults.length > 0 ? (
+                    <ul>
+                        {searchResults.map(result => (
+                            <li key={result.id}>{`Group 1: ${result.group1}, Group 2: ${result.group2}`}</li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No results found.</p>
+                )}
+            </div>
+        </div>
+    );
+}
+
+export default CheckboxFilter;
